@@ -1,12 +1,17 @@
 "use client";
 
 import Icon from "@/components/Icon";
+import { useAuth } from "@/lib/auth-context";
 
 type Props = {
   onMenu: () => void;
 };
 
 export default function Topbar({ onMenu }: Props) {
+  const { user, logout } = useAuth();
+  const displayName = user?.full_name || user?.username || "Dennis Muga";
+  const displayRole = user?.role || "Administrator";
+
   return (
     <header className="mb-3">
       <nav className="navbar navbar-expand navbar-light">
@@ -16,40 +21,39 @@ export default function Topbar({ onMenu }: Props) {
           </a>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
-              <li className="nav-item dropdown me-3">
-                <a className="nav-link active dropdown-toggle" href="#" role="button">
+            <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+              <li className="nav-item me-3">
+                <a className="nav-link active" href="#" role="button">
                   <Icon name="bell" size={22} className="text-gray-600" />
                 </a>
-                <ul className="dropdown-menu dropdown-menu-end">
-                  <li>
-                    <h6 className="dropdown-header">Notifications</h6>
-                  </li>
-                  <li>
-                    <a className="dropdown-item">No notification available</a>
-                  </li>
-                </ul>
               </li>
             </ul>
 
-            <div className="dropdown">
-              <a href="#" role="button">
-                <div className="user-menu d-flex">
-                  <div className="user-name text-end me-3">
-                    <h6 className="mb-0">Dennis Muga</h6>
-                    <p className="mb-0">Administrator</p>
-                  </div>
-                  <div className="user-img d-flex align-items-center">
-                    <div className="avatar avatar-md">
-                      <img
-                        src="https://i.pravatar.cc/80?img=12"
-                        alt="user"
-                        style={{ width: 38, height: 38, borderRadius: "50%" }}
-                      />
-                    </div>
+            <div className="d-flex align-items-center gap-3">
+              <div className="user-menu d-flex align-items-center">
+                <div className="user-name text-end me-3">
+                  <h6 className="mb-0">{displayName}</h6>
+                  <p className="mb-0 text-muted" style={{ fontSize: "0.75rem" }}>{displayRole}</p>
+                </div>
+                <div className="user-img d-flex align-items-center">
+                  <div className="avatar avatar-md">
+                    <img
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=435ebe&color=fff`}
+                      alt="user"
+                      style={{ width: 38, height: 38, borderRadius: "50%" }}
+                    />
                   </div>
                 </div>
-              </a>
+              </div>
+
+              <button
+                onClick={logout}
+                className="btn btn-light-primary btn-sm d-flex align-items-center gap-1 font-bold ms-2"
+                title="Log out"
+              >
+                <Icon name="logout" size={18} />
+                <span className="d-none d-sm-inline">Logout</span>
+              </button>
             </div>
           </div>
         </div>
@@ -57,3 +61,4 @@ export default function Topbar({ onMenu }: Props) {
     </header>
   );
 }
+
