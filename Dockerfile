@@ -1,0 +1,58 @@
+# syntax=docker/dockerfile:1
+
+# ── Stage 1: Install dependencies ────────────────────────────────────────────
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts
+
+# Install all deps (including devDeps) in a separate layer for the builder
+FROM node:20-alpine AS deps-all
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts
+
+# ── Stage 2: Build ────────────────────────────────────────────────────────────
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+COPY --from=deps-all /app/node_modules ./node_modules
+COPY . .
+
+# API_BASE is server-side only and baked in at build time.
+# Override with --build-arg API_BASE=http://your-backend:port
+ARG API_BASE=http://backend:8000
+ENV API_BASE=${API_BASE}
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+RUN npm run build
+
+# ── Stage 3: Production runner ────────────────────────────────────────────────
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+# Non-root user for security
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 nextjs
+
+# Copy the minimal standalone output produced by next build
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
+
+EXPOSE 3000
+
+# next.config.mjs output:"standalone" emits a self-contained server.js
+CMD ["node", "server.js"]

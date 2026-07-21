@@ -10,7 +10,7 @@ type Props = {
 export default function Topbar({ onMenu }: Props) {
   const { user, logout } = useAuth();
   const displayName = user?.full_name || user?.username || "Dennis Muga";
-  const displayRole = user?.role || "Administrator";
+  const displayRole = user?.role?.name || "Administrator";
 
   return (
     <header className="mb-3">

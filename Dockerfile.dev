@@ -1,0 +1,18 @@
+# syntax=docker/dockerfile:1
+
+# Lightweight dev image — mounts the host source via volume so hot reload works.
+# Does NOT produce a production build.
+
+FROM node:20-alpine
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install dependencies first (cached layer)
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Source files are mounted at runtime (see docker-compose.yml volumes)
+EXPOSE 3000
+ENV NEXT_TELEMETRY_DISABLED=1
+
+CMD ["npm", "run", "dev"]
