@@ -5,6 +5,7 @@ import type { LoginRequest, TokenPair, ApiError } from "@/lib/types";
 const isProduction = process.env.NODE_ENV === "production";
 
 export async function POST(request: Request) {
+  console.log("Using API_BASE:", API_BASE);
   let body: LoginRequest;
   try {
     body = (await request.json()) as LoginRequest;
