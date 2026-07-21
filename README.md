@@ -13,7 +13,6 @@ Next.js 14 frontend for the Tiba Hospital Management Information System.
   - [Prerequisites](#prerequisites)
   - [Environment Variables](#environment-variables)
   - [Running Locally](#running-locally)
-  - [Running with Docker](#running-with-docker)
   - [Deploying to Vercel](#deploying-to-vercel)
 - [Routes](#routes)
 - [Security](#security)
@@ -64,9 +63,6 @@ hmis-frontend/
     mock-data.ts              Static fixture data
   middleware.ts               Route protection
   .devcontainer/              VS Code DevContainer
-  Dockerfile                  Production image
-  Dockerfile.dev              Development image
-  docker-compose.yml          Compose file
 ```
 
 ---
@@ -126,7 +122,7 @@ cp .env.example .env.local
 
 ```
 # Running natively:  http://localhost:8000
-# Running in Docker: http://host.docker.internal:8000
+# Inside DevContainer: http://host.docker.internal:8000
 API_BASE=http://localhost:8000
 ```
 
@@ -140,28 +136,6 @@ npm run dev
 ```
 
 Application starts at http://localhost:3000.
-
-### Running with Docker
-
-**Development (source mounted, hot reload):**
-
-```bash
-export API_BASE=http://host.docker.internal:8000
-docker compose up
-```
-
-**Production:**
-
-```bash
-export API_BASE=http://host.docker.internal:8000
-docker compose --profile prod up --build
-```
-
-The production image uses `output: standalone` from `next.config.mjs` and runs as a
-non-root user.
-
-On Linux, `host.docker.internal` requires adding `extra_hosts: ["host.docker.internal:host-gateway"]`
-to the service definition in `docker-compose.yml`.
 
 ### Deploying to Vercel
 
