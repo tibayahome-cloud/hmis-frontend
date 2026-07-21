@@ -69,7 +69,6 @@ hmis-frontend/
   Dockerfile              Production multi-stage Docker image
   Dockerfile.dev          Development Docker image
   docker-compose.yml      Frontend-only compose (dev and prod profiles)
-  docker-compose.fullstack.yml  Full-stack compose (frontend + backend + Redis)
 ```
 
 ---
@@ -137,9 +136,8 @@ Edit `.env.local`:
 
 ```
 # Server-side only. Never sent to the browser.
-# Local native dev:           http://localhost:8000
-# Frontend in Docker:         http://host.docker.internal:8000
-# Full-stack Docker compose:  http://backend:8000
+# Running natively:   http://localhost:8000
+# Running in Docker:  http://host.docker.internal:8000
 API_BASE=http://localhost:8000
 ```
 
@@ -156,23 +154,23 @@ Open http://localhost:3000. The backend is expected at http://localhost:8000.
 
 ### Running with Docker
 
-The frontend has its own `docker-compose.yml`. The backend runs its own separate compose
-from `tyh-api/` — they do not share a compose file.
+`docker-compose.yml` manages the frontend only. The backend is a separate service and
+manages its own compose.
+
+Set `API_BASE` to the address of the running backend before starting. On Docker Desktop
+(Mac and Windows) `host.docker.internal` resolves to the host machine automatically.
+On Linux, use the host IP or add `extra_hosts: ["host.docker.internal:host-gateway"]`
+to the service in `docker-compose.yml`.
 
 **Development server (hot reload):**
 
 ```bash
-# Set API_BASE so the container can reach the backend on your host
 export API_BASE=http://host.docker.internal:8000
 docker compose up
 ```
 
 Source files are mounted as a volume so changes are reflected immediately without
 rebuilding the image. The dev server starts on http://localhost:3000.
-
-On Docker Desktop (Mac and Windows) `host.docker.internal` resolves to the host machine
-automatically. On Linux you may need to add `--add-host=host.docker.internal:host-gateway`
-to the `extra_hosts` section in `docker-compose.yml` or use the host IP directly.
 
 **Production build:**
 
@@ -182,22 +180,7 @@ docker compose --profile prod up --build
 ```
 
 The production image uses the multi-stage `Dockerfile` and runs the Next.js standalone
-server. `API_BASE` is baked in as a Docker build argument and also passed as a runtime
-environment variable.
-
-Start the backend first via its own compose:
-
-```bash
-# In tyh-api/
-docker compose -f docker-compose-dev.yml up   # or docker-compose.yml for production
-```
-
-Then start the frontend:
-
-```bash
-# In hmis-frontend/
-docker compose up
-```
+server. `API_BASE` is baked in as a build argument and also injected at runtime.
 
 ---
 
