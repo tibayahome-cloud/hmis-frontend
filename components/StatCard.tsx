@@ -35,20 +35,18 @@ const SPARK_COLOR: Record<string, string> = {
 
 export default function StatCard({ kpi, index = 0 }: { kpi: Kpi; index?: number }) {
   return (
-    <div className="col-6 col-lg-3 col-md-6 reveal" style={{ ["--d" as string]: `${index * 80}ms` }}>
-      <div className="card">
-        <div className="card-body px-3 py-4-5" style={{ position: "relative" }}>
-          <div className="row">
-            <div className="col-md-4">
-              <div className={`stats-icon ${kpi.color}`}>
-                <Icon name={kpi.icon} size={20} />
-              </div>
+    <div className="col-12 col-sm-6 col-xl-3 reveal" style={{ ["--d" as string]: `${index * 80}ms` }}>
+      <div className="card h-100 mb-3">
+        <div className="card-body px-4 py-4" style={{ position: "relative", minHeight: "115px" }}>
+          <div className="d-flex align-items-center gap-3">
+            <div className={`stats-icon ${kpi.color} flex-shrink-0`}>
+              <Icon name={kpi.icon} size={20} />
             </div>
-            <div className="col-md-8">
-              <h6 className="text-muted font-semibold mb-0">{kpi.label}</h6>
-              <h6 className="font-extrabold mb-0">
+            <div style={{ minWidth: 0 }}>
+              <h6 className="text-muted font-semibold mb-1 text-truncate" style={{ fontSize: "0.85rem" }}>{kpi.label}</h6>
+              <h6 className="font-extrabold mb-0" style={{ fontSize: "1.4rem" }}>
                 {kpi.value.toLocaleString()}
-                {kpi.unit && <span style={{ fontSize: 16 }}> {kpi.unit}</span>}
+                {kpi.unit && <span style={{ fontSize: "0.9rem", fontWeight: 600 }}> {kpi.unit}</span>}
               </h6>
             </div>
           </div>
