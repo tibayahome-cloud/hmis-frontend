@@ -14,6 +14,7 @@ Next.js 14 frontend for the Tiba Hospital Management Information System.
   - [Environment Variables](#environment-variables)
   - [Running Locally](#running-locally)
   - [Running with Docker](#running-with-docker)
+  - [Deploying to Vercel](#deploying-to-vercel)
 - [Routes](#routes)
 - [Security](#security)
 - [DevContainer](#devcontainer)
@@ -161,6 +162,16 @@ non-root user.
 
 On Linux, `host.docker.internal` requires adding `extra_hosts: ["host.docker.internal:host-gateway"]`
 to the service definition in `docker-compose.yml`.
+
+### Deploying to Vercel
+
+The application is fully compatible with Vercel out of the box.
+
+1. Import the repository into Vercel.
+2. Under **Environment Variables**, add `API_BASE` and set it to your production backend URL (e.g., `https://api.yourdomain.com`).
+3. Deploy.
+
+The `output: 'standalone'` setting in `next.config.mjs` is fully supported by Vercel and does not interfere with their standard deployment process.
 
 ---
 
