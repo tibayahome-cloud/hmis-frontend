@@ -1,7 +1,0 @@
-# This file is not used.
-#
-# The backend manages its own docker-compose in tyh-api/.
-# The frontend manages its own docker-compose in hmis-frontend/ (docker-compose.yml).
-#
-# To connect them, set API_BASE=http://host.docker.internal:8000 in your
-# hmis-frontend/.env.local and run each compose independently.
