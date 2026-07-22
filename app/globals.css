@@ -15,7 +15,7 @@
   --sidebar-bg: #fff;
   --sidebar-width: 300px;
   --body-color: #25396f;
-  --muted: #a9b5c9;
+  --muted: #57657a;
   --card-border: #e9ecef;
   --font: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
@@ -91,6 +91,7 @@ h4 {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-header {
@@ -647,6 +648,9 @@ body {
 .d-flex { display: flex !important; }
 .d-block { display: block !important; }
 .d-none { display: none !important; }
+.flex-column { flex-direction: column !important; }
+.flex-col { flex-direction: column !important; }
+.d-grid { display: grid !important; }
 .align-items-center { align-items: center !important; }
 .justify-content-between { justify-content: space-between !important; }
 .justify-content-end { justify-content: flex-end !important; }

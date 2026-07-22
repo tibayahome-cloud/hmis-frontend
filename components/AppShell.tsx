@@ -24,13 +24,21 @@ export default function AppShell({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const heading = title ?? "Dashboard";
 
+  const handleMenuToggle = () => {
+    if (typeof window !== "undefined" && window.innerWidth >= 992) {
+      setSidebarCollapsed((v) => !v);
+    } else {
+      setSidebarOpen((v) => !v);
+    }
+  };
+
   return (
     <div id="app" style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar
         open={sidebarOpen}
         onNavigate={() => setSidebarOpen(false)}
         collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+        onToggleCollapse={handleMenuToggle}
       />
       {sidebarOpen && (
         <div
@@ -39,7 +47,7 @@ export default function AppShell({
         />
       )}
       <div id="main" className="layout-navbar" style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
-        <Topbar onMenu={() => setSidebarOpen((v) => !v)} />
+        <Topbar onMenu={handleMenuToggle} />
         <div id="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", padding: "2rem" }}>
           {children}
           <footer style={{ marginTop: "auto" }}>

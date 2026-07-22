@@ -42,14 +42,6 @@ export default function Sidebar({ open, onNavigate, collapsed, onToggleCollapse 
                 </Link>
               </div>
             )}
-            <button
-              type="button"
-              className="btn btn-sm btn-light sidebar-toggle"
-              onClick={onToggleCollapse}
-              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              <Icon name="menu" size={18} />
-            </button>
           </div>
         </div>
 

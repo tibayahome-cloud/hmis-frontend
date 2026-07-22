@@ -64,6 +64,19 @@ const PATHS: Record<string, () => React.ReactNode> = {
   ),
   menu: () => <path d="M3 6h18M3 12h18M3 18h18" />,
   logout: () => <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />,
+  hospital: () => (
+    <>
+      <path d="M18 22V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14M14 22v-4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v4M18 14h3a2 2 0 0 1 2 2v6h-5" />
+      <path d="M10 10V8M7 10h6" />
+    </>
+  ),
+  activity: () => <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
+  database: () => (
+    <>
+      <ellipse cx="12" cy="5" rx="9" ry="3" />
+      <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5M3 12c0 1.66 4 3 9 3s9-1.34 9-3" />
+    </>
+  ),
 };
 
 export default function Icon({ name, size = 20, className }: P) {
