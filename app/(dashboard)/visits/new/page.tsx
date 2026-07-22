@@ -65,7 +65,7 @@ export default function NewVisitPage() {
             </div>
             <div className="card-body">
               <p className="text-muted" style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>
-                Encounter details will be saved once backend endpoints are available.
+                Encounter details will be available here soon.
               </p>
             </div>
           </div>

@@ -93,7 +93,7 @@ export default function NewPatientPage() {
             </div>
             <div className="card-body">
               <p className="text-muted" style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>
-                Registration and intake details will be saved to the patient record once backend endpoints are enabled.
+                Registration and intake details will be available here soon.
               </p>
             </div>
           </div>
