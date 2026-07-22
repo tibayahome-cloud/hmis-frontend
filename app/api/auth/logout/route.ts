@@ -13,7 +13,7 @@ export async function POST() {
   // We do this before clearing cookies so the token is unusable even if captured.
   if (refreshToken) {
     try {
-      await fetch(`${API_BASE}/api/v1/auth/logout`, {
+      await fetch(`${API_BASE}//auth/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,7 +44,7 @@ export async function POST() {
     name: REFRESH_TOKEN_COOKIE,
     value: "",
     httpOnly: true,
-    path: "/api/auth",
+    path: "//auth",
     sameSite: "lax",
     maxAge: 0,
     secure: isProduction,

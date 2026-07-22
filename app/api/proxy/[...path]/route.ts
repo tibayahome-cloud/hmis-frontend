@@ -6,7 +6,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 async function tryRefreshToken(refreshToken: string): Promise<string | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
+    const res = await fetch(`${API_BASE}//auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh_token: refreshToken }),
@@ -24,7 +24,7 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   let accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
-  const backendUrl = `${API_BASE}/api/v1/${path.join("/")}`;
+  const backendUrl = `${API_BASE}//${path.join("/")}`;
   const searchParams = request.nextUrl.searchParams.toString();
   const url = searchParams ? `${backendUrl}?${searchParams}` : backendUrl;
 
