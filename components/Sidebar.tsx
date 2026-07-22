@@ -17,12 +17,15 @@ export default function Sidebar({ open, onNavigate }: Props) {
   const { user } = useAuth();
   const role = user?.role?.name || "";
 
-  // Filter nav groups to only show items the current role can access
-  const allowedRoutes = ROLE_ROUTES[role] || [];
-  const visibleNav = NAV.map((group) => ({
-    ...group,
-    items: group.items.filter((item) => allowedRoutes.includes(item.href)),
-  })).filter((group) => group.items.length > 0);
+  // Filter nav groups to only show items the current role can access.
+  // During development, if the role isn't in ROLE_ROUTES, show all items.
+  const allowedRoutes = ROLE_ROUTES[role];
+  const visibleNav = allowedRoutes
+    ? NAV.map((group) => ({
+        ...group,
+        items: group.items.filter((item) => allowedRoutes.includes(item.href)),
+      })).filter((group) => group.items.length > 0)
+    : NAV;
 
   return (
     <div id="sidebar" className={open ? "active" : ""}>

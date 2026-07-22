@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { ACCESS_TOKEN_COOKIE } from "@/lib/constants";
-import { ROUTE_ROLES } from "@/lib/role-routes";
 
 /** Paths that do not require authentication. */
 const PUBLIC_PATHS = [
@@ -28,21 +27,24 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // Role-based access control: check if the user's role can access this path
-  // The role is decoded from the JWT token server-side in the API routes,
-  // but for middleware we check the path prefix against allowed roles.
-  // The actual role check happens in the backend API via require_roles().
-  // Here we just do a basic path-based check to prevent navigation to
-  // unauthorized sections.
-  const pathRole = Object.keys(ROUTE_ROLES).find((rolePath) =>
-    pathname.startsWith(rolePath)
-  );
-  if (pathRole) {
-    // The role is embedded in the JWT token. We can't decode it here
-    // without importing the JWT library, so we rely on the backend for
-    // actual authorization. The frontend sidebar already filters nav items.
-    // This is defense-in-depth — the backend will reject unauthorized requests.
-  }
+  // TEMPORARY: Role-based access control is disabled during development.
+  // The backend's require_roles() RBAC will enforce permissions when
+  // the relevant API routes are implemented. For now, any authenticated
+  // user can access all dashboard pages for layout testing.
+  //
+  // When ready to enable, uncomment the following block and ensure
+  // the backend routes are implemented:
+  //
+  // import { ROUTE_ROLES } from "@/lib/role-routes";
+  // const pathRole = Object.keys(ROUTE_ROLES).find((rolePath) =>
+  //   pathname.startsWith(rolePath)
+  // );
+  // if (pathRole) {
+  //   // The role is embedded in the JWT token. We can't decode it here
+  //   // without importing the JWT library, so we rely on the backend for
+  //   // actual authorization. The frontend sidebar already filters nav items.
+  //   // This is defense-in-depth — the backend will reject unauthorized requests.
+  // }
 
   return NextResponse.next();
 }
