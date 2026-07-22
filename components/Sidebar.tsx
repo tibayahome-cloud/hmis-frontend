@@ -28,9 +28,6 @@ export default function Sidebar({ open, onNavigate, collapsed, onToggleCollapse 
       })).filter((group) => group.items.length > 0)
     : NAV;
 
-  const displayName = user?.full_name || "Staff User";
-  const displayRole = user?.role?.name || "Administrator";
-
   return (
     <div id="sidebar" className={open ? "active" : ""}>
       <div className={`sidebar-wrapper ${collapsed ? "collapsed" : ""}`}>
@@ -51,7 +48,7 @@ export default function Sidebar({ open, onNavigate, collapsed, onToggleCollapse 
               onClick={onToggleCollapse}
               title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
-              <Icon name={collapsed ? "menu" : "menu"} size={18} />
+              <Icon name="menu" size={18} />
             </button>
           </div>
         </div>
@@ -82,28 +79,13 @@ export default function Sidebar({ open, onNavigate, collapsed, onToggleCollapse 
         </div>
 
         <div className="sidebar-footer">
-          <div className="sidebar-user d-flex align-items-center gap-3">
-            <div className="user-img">
-              <div className="avatar avatar-md">
-                <img
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=435ebe&color=fff`}
-                  alt="user"
-                  style={{ width: 38, height: 38, borderRadius: "50%" }}
-                />
-              </div>
-            </div>
-            {!collapsed && (
-              <div className="user-info flex-1">
-                <div className="fw-semibold" style={{ fontSize: "0.9rem" }}>{displayName}</div>
-                <div className="text-muted" style={{ fontSize: "0.75rem" }}>{displayRole}</div>
-              </div>
-            )}
+          <div className="d-flex align-items-center justify-content-center">
             <button
               onClick={logout}
               className="btn btn-sm btn-light-primary d-flex align-items-center justify-content-center"
               title="Log out"
             >
-              <Icon name="logout" size={16} />
+              <Icon name="logout" size={18} />
               {!collapsed && <span className="d-none d-sm-inline ms-1">Logout</span>}
             </button>
           </div>
