@@ -6,7 +6,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 async function tryRefreshToken(refreshToken: string): Promise<string | null> {
   try {
-    const res = await fetch(`${API_BASE}//auth/refresh`, {
+    const res = await fetch(`${API_BASE}/auth/refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refresh_token: refreshToken }),
