@@ -1,17 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import StatCard from "@/components/StatCard";
-import VisitQueue from "@/components/VisitQueue";
 import { staff } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
 import type { StaffRead } from "@/lib/types";
-
-const DISPOSITION: Record<string, string> = {
-  Complete: "bg-success",
-  "In progress": "bg-warning",
-  Waiting: "bg-info",
-};
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -65,12 +57,12 @@ export default function DashboardPage() {
       </div>
 
       <section className="row">
-        <div className="col-12 col-lg-9">
+        <div className="col-12 col-lg-8">
           <div className="row">
             <div className="col-12">
               <div className="card reveal" style={{ ["--d" as string]: "220ms" }}>
                 <div className="card-header">
-                  <h4>Logged in as</h4>
+                  <h4>Profile</h4>
                 </div>
                 <div className="card-body">
                   {loading ? (
@@ -93,60 +85,35 @@ export default function DashboardPage() {
           </div>
 
           <div className="row">
-            <div className="col-12 col-lg-6">
+            <div className="col-12 col-md-6">
               <div className="card reveal" style={{ ["--d" as string]: "260ms" }}>
                 <div className="card-header">
-                  <h4>Available endpoints</h4>
-                </div>
-                <div className="card-body">
-                  <ul>
-                    <li><code>POST /api/v1/auth/login</code></li>
-                    <li><code>POST /api/v1/auth/refresh</code></li>
-                    <li><code>POST /api/v1/auth/logout</code></li>
-                    <li><code>GET /api/v1/staff/me</code></li>
-                    <li><code>GET /api/v1/staff</code></li>
-                    <li><code>POST /api/v1/staff</code></li>
-                    <li><code>GET /api/v1/staff/roles/list</code></li>
-                    <li><code>GET /api/v1/hospitals</code></li>
-                    <li><code>POST /api/v1/hospitals</code></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-12 col-lg-6">
-              <div className="card reveal" style={{ ["--d" as string]: "300ms" }}>
-                <div className="card-header">
-                  <h4>Role</h4>
+                  <h4>Account</h4>
                 </div>
                 <div className="card-body">
                   {loading ? (
-                    <div className="text-muted">Loading role...</div>
+                    <div className="text-muted">Loading...</div>
                   ) : (
                     <div>
-                      <div className="font-bold" style={{ fontSize: "2rem" }}>
+                      <div className="font-bold" style={{ fontSize: "1.6rem" }}>
                         {role || "—"}
                       </div>
-                      <div className="text-muted">Current authenticated role</div>
+                      <div className="text-muted">Role</div>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="row">
-            <div className="col-12">
-              <div className="card reveal" style={{ ["--d" as string]: "340ms" }}>
+            <div className="col-12 col-md-6">
+              <div className="card reveal" style={{ ["--d" as string]: "300ms" }}>
                 <div className="card-header">
-                  <h4>Workflow coverage</h4>
+                  <h4>Getting started</h4>
                 </div>
                 <div className="card-body">
                   <div className="text-muted">
-                    Backend endpoints currently implemented: auth, hospitals, staff.
-                    Patient, visit, billing, pharmacy, admission, ward-rounds,
-                    service-rooms, triage, queue, and discharge endpoints are
-                    not yet implemented in the backend.
+                    Use the left menu to manage staff and hospital setup.
+                    Additional workflows will appear here as modules are enabled.
                   </div>
                 </div>
               </div>
@@ -154,7 +121,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="col-12 col-lg-3">
+        <div className="col-12 col-lg-4">
           <div className="card reveal" style={{ ["--d" as string]: "300ms" }}>
             <div className="card-header">
               <h4>Quick actions</h4>
