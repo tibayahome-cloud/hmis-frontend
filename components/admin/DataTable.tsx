@@ -35,19 +35,23 @@ export default function DataTable<T>({
             <thead>
               <tr>
                 {columns.map((column) => (
-                  <th key={String(column.key)}>{column.label}</th>
+                  <th key={String(column.key)} style={{ color: "#374151", fontWeight: 600, fontSize: "0.85rem", textTransform: "none", padding: "0.95rem 1.5rem" }}>
+                    {column.label}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={columns.length} className="text-center py-4 text-muted" style={{ color: "var(--muted)" }}>
-                    <div className="d-flex align-items-center justify-content-center gap-2">
-                      <span>Loading records...</span>
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: 8 }).map((_, idx) => (
+                  <tr key={`skeleton-${idx}`}>
+                    {columns.map((column) => (
+                      <td key={`skeleton-col-${String(column.key)}`}>
+                        <div className="animate-pulse bg-skeleton rounded" style={{ height: "1.2rem", width: column.key === "email" ? "75%" : "50%", margin: "4px 0" }} />
+                      </td>
+                    ))}
+                  </tr>
+                ))
               ) : items.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="text-center py-5 text-muted" style={{ color: "var(--muted)" }}>
