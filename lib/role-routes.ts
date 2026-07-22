@@ -1,7 +1,7 @@
 /** Role-to-route mapping for navigation filtering and access control. */
 
 export const ROLE_ROUTES: Record<string, string[]> = {
-  super_admin: ["/", "/patients", "/visits", "/staff", "/admin", "/reports"],
+  super_admin: ["/", "/patients", "/visits", "/staff", "/hospitals", "/admin", "/reports"],
   admin: ["/", "/patients", "/visits", "/staff", "/admin"],
   receptionist: ["/", "/patients", "/patients/new", "/visits", "/visits/new"],
   triage_nurse: ["/", "/patients/triage", "/queues/triage"],
