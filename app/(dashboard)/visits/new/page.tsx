@@ -65,8 +65,7 @@ export default function NewVisitPage() {
             </div>
             <div className="card-body">
               <p className="text-muted" style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>
-                The visit form posts to the visits endpoint once it exists. For now it is local. Submitting should
-                create a record and drop the patient into the live queue.
+                Encounter details will be saved once backend endpoints are available.
               </p>
             </div>
           </div>
