@@ -669,6 +669,9 @@ body {
   padding-left: 0.75rem;
   margin-right: auto;
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* ---------- entrance motion ---------- */
