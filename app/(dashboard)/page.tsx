@@ -78,18 +78,25 @@ export default function DashboardPage() {
     }
   };
 
+  const greeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  };
+
   return (
     <>
       <div className="page-heading">
         <div className="page-title">
           <div className="row">
             <div className="col-12 col-md-6 order-md-1 order-last">
-              <h3>Dashboard</h3>
-              <p className="text-subtitle text-muted">
+              <h3 style={{ color: "#1F2937", fontWeight: 700 }}>Dashboard</h3>
+              <p className="text-subtitle" style={{ color: "#4B5563" }}>
                 {loading
                   ? "Loading your session..."
                   : profile
-                    ? `Good morning, ${profile.full_name}.`
+                    ? `${greeting()}, ${profile.full_name}.`
                     : "Overview of your hospital environment."}
               </p>
             </div>
@@ -109,8 +116,26 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <section className="section">
-        {renderDashboardContent()}
+      <section className="section" style={{ overflowY: "auto", flex: 1 }}>
+        {loading ? (
+          <div className="row g-4">
+            {[100, 150, 200, 250].map((d) => (
+              <div key={d} className="col-12 col-sm-6 col-xl-3">
+                <div className="card h-100">
+                  <div className="card-body p-4 d-flex align-items-center gap-3">
+                    <div className="animate-pulse bg-skeleton rounded" style={{ width: 44, height: 44, borderRadius: "12px" }} />
+                    <div style={{ flex: 1 }}>
+                      <div className="animate-pulse bg-skeleton rounded mb-2" style={{ height: "0.75rem", width: "60%" }} />
+                      <div className="animate-pulse bg-skeleton rounded" style={{ height: "1.4rem", width: "35%" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          renderDashboardContent()
+        )}
       </section>
     </>
   );

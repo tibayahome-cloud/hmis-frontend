@@ -33,7 +33,7 @@ export default function AppShell({
   };
 
   return (
-    <div id="app" style={{ display: "flex", minHeight: "100vh" }}>
+    <div id="app">
       <Sidebar
         open={sidebarOpen}
         onNavigate={() => setSidebarOpen(false)}
@@ -46,20 +46,16 @@ export default function AppShell({
           style={{ position: "fixed", inset: 0, zIndex: 9, background: "rgba(0,0,0,0.3)" }}
         />
       )}
-      <div id="main" className="layout-navbar" style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
+      <div id="main" className="layout-navbar">
         <Topbar onMenu={handleMenuToggle} />
-        <div id="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", padding: "2rem" }}>
+        <div id="main-content">
           {children}
-          <footer style={{ marginTop: "auto" }}>
+          <footer style={{ marginTop: "auto", paddingTop: "1rem" }}>
             <div className="footer clearfix mb-0 text-muted d-flex justify-content-between align-items-center">
-              <div>
-                <p className="mb-0">2026 &copy; Tiba HMIS</p>
-              </div>
-              <div>
-                <p className="mb-0">
-                  All rights reserved <a href="#">Jack Reacher Ltd</a>
-                </p>
-              </div>
+              <p className="mb-0" style={{ fontSize: "0.8rem", color: "#6B7280" }}>2026 &copy; Tiba HMIS</p>
+              <p className="mb-0" style={{ fontSize: "0.8rem", color: "#6B7280" }}>
+                All rights reserved <a href="#" style={{ color: "#435ebe" }}>Jack Reacher Ltd</a>
+              </p>
             </div>
           </footer>
         </div>
