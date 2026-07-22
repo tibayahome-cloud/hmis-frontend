@@ -29,6 +29,13 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    label: "ADMIN",
+    items: [
+      { label: "Staff", href: "/staff", icon: "people" },
+      { label: "Hospitals", href: "/hospitals", icon: "grid" },
+    ],
+  },
+  {
     label: "CLINICAL OPERATIONS",
     items: [
       { label: "Visits", href: "/visits", icon: "clock", exact: true },
