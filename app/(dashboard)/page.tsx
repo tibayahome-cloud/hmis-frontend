@@ -1,29 +1,113 @@
-import Link from "next/link";
-import StatCard from "@/components/StatCard";
-import VisitQueue from "@/components/VisitQueue";
-import { KPIS, QUEUE, VISITS } from "@/lib/mock-data";
+"use client";
 
-const DISPOSITION: Record<string, string> = {
-  Complete: "bg-success",
-  "In progress": "bg-warning",
-  Waiting: "bg-info",
-};
+import { useEffect, useState } from "react";
+import { staff } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
+import type { StaffRead } from "@/lib/types";
+
+// Import Role Dashboards
+import AdminDashboard from "@/components/dashboards/AdminDashboard";
+import ClinicalDashboard from "@/components/dashboards/ClinicalDashboard";
+import ReceptionDashboard from "@/components/dashboards/ReceptionDashboard";
+import TriageDashboard from "@/components/dashboards/TriageDashboard";
+import SupportDashboard from "@/components/dashboards/SupportDashboard";
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<StaffRead | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      try {
+        const data = await staff.me();
+        if (!cancelled) setProfile(data);
+      } catch {
+        // keep auth-context user state
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const role = profile?.role?.name || user?.role?.name || "";
+
+  // Render correct dashboard based on role name
+  const renderDashboardContent = () => {
+    if (loading) {
+      return (
+        <div className="d-flex justify-content-center align-items-center py-5">
+          <div className="text-muted">Loading your dashboard...</div>
+        </div>
+      );
+    }
+
+    switch (role) {
+      case "super_admin":
+      case "admin":
+        return <AdminDashboard profile={profile} role={role} />;
+
+      case "doctor":
+      case "consultant":
+      case "ward_nurse":
+        return <ClinicalDashboard profile={profile} role={role} />;
+
+      case "receptionist":
+      case "admission_officer":
+        return <ReceptionDashboard profile={profile} role={role} />;
+
+      case "triage_nurse":
+        return <TriageDashboard profile={profile} role={role} />;
+
+      case "lab_tech":
+      case "pharmacist":
+      case "billing_clerk":
+      case "records_officer":
+        return <SupportDashboard profile={profile} role={role} />;
+
+      default:
+        // Default general dashboard fallback
+        return <ClinicalDashboard profile={profile} role={role} />;
+    }
+  };
+
+  const greeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return "Good morning";
+    if (h < 17) return "Good afternoon";
+    return "Good evening";
+  };
+
   return (
     <>
       <div className="page-heading">
         <div className="page-title">
           <div className="row">
             <div className="col-12 col-md-6 order-md-1 order-last">
-              <h3>Dashboard</h3>
-              <p className="text-subtitle text-muted">Get real time analytics for your hospital.</p>
+              <h3 style={{ color: "#1F2937", fontWeight: 700 }}>Dashboard</h3>
+              <p className="text-subtitle" style={{ color: "#4B5563" }}>
+                {loading
+                  ? "Loading your session..."
+                  : profile
+                    ? `${greeting()}, ${profile.full_name}.`
+                    : "Overview of your hospital environment."}
+              </p>
             </div>
             <div className="col-12 col-md-6 order-md-2 order-first">
               <nav aria-label="breadcrumb" className="breadcrumb-header float-start float-lg-end">
                 <ol className="breadcrumb">
                   <li className="breadcrumb-item">
-                    <Link href="/">Dashboard</Link>
+                    <a href="/">Home</a>
+                  </li>
+                  <li className="breadcrumb-item active" aria-current="page">
+                    Dashboard
                   </li>
                 </ol>
               </nav>
@@ -32,98 +116,26 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <section className="row">
-        <div className="col-12 col-lg-9">
-          <div className="row">
-            {KPIS.map((k, i) => (
-              <StatCard key={k.label} kpi={k} index={i} />
+      <section className="section" style={{ overflowY: "auto", flex: 1 }}>
+        {loading ? (
+          <div className="row g-4">
+            {[100, 150, 200, 250].map((d) => (
+              <div key={d} className="col-12 col-sm-6 col-xl-3">
+                <div className="card h-100">
+                  <div className="card-body p-4 d-flex align-items-center gap-3">
+                    <div className="animate-pulse bg-skeleton rounded" style={{ width: 44, height: 44, borderRadius: "12px" }} />
+                    <div style={{ flex: 1 }}>
+                      <div className="animate-pulse bg-skeleton rounded mb-2" style={{ height: "0.75rem", width: "60%" }} />
+                      <div className="animate-pulse bg-skeleton rounded" style={{ height: "1.4rem", width: "35%" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
-
-          <div className="row">
-            <div className="col-12">
-              <div className="card reveal" style={{ ["--d" as string]: "220ms" }}>
-                <div className="card-header">
-                  <h4>Visits by department</h4>
-                </div>
-                <div className="card-body">
-                  <div className="bar-chart">
-                    {VISITS.map((v, i) => (
-                      <div className="bar-col" key={v.id}>
-                        <div
-                          className="bar"
-                          style={{ height: `${40 + ((i + 1) * 22) % 140}px`, animationDelay: `${i * 60}ms` }}
-                        />
-                        <span className="bar-label">{v.department.slice(0, 4)}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="col-12">
-              <div className="reveal" style={{ ["--d" as string]: "260ms" }}>
-                <VisitQueue rows={QUEUE} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-12 col-lg-3">
-          <div className="card reveal" style={{ ["--d" as string]: "300ms" }}>
-            <div className="card-header">
-              <h4>Acuity mix</h4>
-            </div>
-            <div className="card-body">
-              <div className="legend-row">
-                <span>
-                  <span className="legend-dot" style={{ background: "var(--bs-danger)" }} />
-                  Critical
-                </span>
-                <strong>{QUEUE.filter((q) => q.acuity === "red").length}</strong>
-              </div>
-              <div className="legend-row">
-                <span>
-                  <span className="legend-dot" style={{ background: "var(--bs-warning)" }} />
-                  Urgent
-                </span>
-                <strong>{QUEUE.filter((q) => q.acuity === "amber").length}</strong>
-              </div>
-              <div className="legend-row">
-                <span>
-                  <span className="legend-dot" style={{ background: "var(--bs-success)" }} />
-                  Stable
-                </span>
-                <strong>{QUEUE.filter((q) => q.acuity === "green").length}</strong>
-              </div>
-            </div>
-          </div>
-
-          <div className="card reveal" style={{ ["--d" as string]: "340ms" }}>
-            <div className="card-header">
-              <h4>Recent visits</h4>
-            </div>
-            <div className="card-content pb-4">
-              {VISITS.slice(0, 4).map((v) => (
-                <div key={v.id} style={{ padding: "0.9rem 1.5rem", borderBottom: "1px solid var(--card-border)" }}>
-                  <div className="font-bold">{v.patient}</div>
-                  <div className="text-muted" style={{ fontSize: "0.8rem" }}>
-                    {v.time} · {v.department}
-                  </div>
-                  <span className={`badge ${DISPOSITION[v.disposition]} mt-1`}>{v.disposition}</span>
-                </div>
-              ))}
-              <div style={{ padding: "1rem 1.5rem" }}>
-                <Link href="/visits" className="btn btn-light-primary font-bold w-100">
-                  View all
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+        ) : (
+          renderDashboardContent()
+        )}
       </section>
     </>
   );

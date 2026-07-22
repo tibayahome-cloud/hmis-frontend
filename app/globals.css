@@ -15,7 +15,7 @@
   --sidebar-bg: #fff;
   --sidebar-width: 300px;
   --body-color: #25396f;
-  --muted: #a9b5c9;
+  --muted: #57657a;
   --card-border: #e9ecef;
   --font: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
 }
@@ -91,6 +91,7 @@ h4 {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-header {
@@ -183,6 +184,44 @@ h4 {
 
 .sidebar-toggler {
   display: none;
+}
+
+/* ---------- collapsed sidebar ---------- */
+#sidebar .sidebar-wrapper.collapsed {
+  width: 70px;
+}
+
+#sidebar .sidebar-wrapper.collapsed .sidebar-header,
+#sidebar .sidebar-wrapper.collapsed .sidebar-footer {
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+#sidebar .sidebar-wrapper.collapsed .sidebar-link {
+  justify-content: center;
+  padding: 0.7rem 0.5rem;
+}
+
+#sidebar .sidebar-wrapper.collapsed .sidebar-link span {
+  display: none;
+}
+
+#sidebar .sidebar-wrapper.collapsed .sidebar-title {
+  display: none;
+}
+
+.sidebar-toggle {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 0.4rem;
+}
+
+/* ---------- sidebar footer ---------- */
+.sidebar-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--card-border);
+  background: var(--sidebar-bg);
 }
 
 /* ---------- navbar / topbar ---------- */
@@ -403,6 +442,22 @@ h4 {
 .btn-light-primary {
   background: #eef1fd;
   color: var(--bs-primary);
+  border: 1px solid rgba(67, 94, 190, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-light-primary:hover:not(:disabled) {
+  background: var(--bs-primary);
+  color: #fff;
+  border-color: var(--bs-primary);
+}
+
+.btn-light-primary:disabled {
+  background: #f1f3f9;
+  color: #8c9ba5;
+  border-color: #d1dbe5;
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 .btn-block {
@@ -514,14 +569,15 @@ h4 {
 
 /* ---------- layout helpers & utility classes ---------- */
 body {
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 #app {
   display: flex;
   min-height: 100vh;
+  height: 100vh;
   width: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 #main {
@@ -530,9 +586,127 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--page-bg);
-  overflow-x: hidden;
+  height: 100vh;
+  overflow: hidden;
 }
 
+#main-content {
+  padding: 1.5rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.table-responsive {
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ---------- slide-over drawer (apple style) ---------- */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 420px;
+  height: 100vh;
+  background: #fff;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer.open {
+  right: 0;
+}
+
+.drawer-header {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.drawer-body {
+  padding: 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.drawer-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  background: #fafafa;
+}
+
+/* ---------- skeleton animation ---------- */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .4; }
+}
+
+.animate-pulse {
+  animation: pulse 1.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.bg-skeleton {
+  background-color: #e5e7eb;
+}
+
+/* ---------- standardized role badge styles ---------- */
+.role-badge {
+  display: inline-block;
+  padding: 0.3em 0.8em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 9999px;
+  text-transform: capitalize;
+}
+
+.role-badge.super_admin,
+.role-badge.admin {
+  background-color: #e0e7ff !important;
+  color: #3730a3 !important;
+}
+
+.role-badge.staff-default {
+  background-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+.role-badge.active-status {
+  background-color: #dcfce7 !important;
+  color: #166534 !important;
+}
+
+.role-badge.inactive-status {
+  background-color: #fee2e2 !important;
+  color: #991b1b !important;
+}
+
+/* Row utilities */
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -609,6 +783,9 @@ body {
 .d-flex { display: flex !important; }
 .d-block { display: block !important; }
 .d-none { display: none !important; }
+.flex-column { flex-direction: column !important; }
+.flex-col { flex-direction: column !important; }
+.d-grid { display: grid !important; }
 .align-items-center { align-items: center !important; }
 .justify-content-between { justify-content: space-between !important; }
 .justify-content-end { justify-content: flex-end !important; }
@@ -669,6 +846,9 @@ body {
   padding-left: 0.75rem;
   margin-right: auto;
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 /* ---------- entrance motion ---------- */

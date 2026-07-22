@@ -20,32 +20,42 @@ export default function AppShell({
   children: React.ReactNode;
   title?: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const heading = title ?? "Dashboard";
+
+  const handleMenuToggle = () => {
+    if (typeof window !== "undefined" && window.innerWidth >= 992) {
+      setSidebarCollapsed((v) => !v);
+    } else {
+      setSidebarOpen((v) => !v);
+    }
+  };
 
   return (
     <div id="app">
-      <Sidebar open={open} onNavigate={() => setOpen(false)} />
-      {open && (
+      <Sidebar
+        open={sidebarOpen}
+        onNavigate={() => setSidebarOpen(false)}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={handleMenuToggle}
+      />
+      {sidebarOpen && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={() => setSidebarOpen(false)}
           style={{ position: "fixed", inset: 0, zIndex: 9, background: "rgba(0,0,0,0.3)" }}
         />
       )}
       <div id="main" className="layout-navbar">
-        <Topbar onMenu={() => setOpen((v) => !v)} />
+        <Topbar onMenu={handleMenuToggle} />
         <div id="main-content">
           {children}
-          <footer>
-            <div className="footer clearfix mb-0 text-muted">
-              <div className="float-start">
-                <p>2026 &copy; Tiba HMIS</p>
-              </div>
-              <div className="float-end">
-                <p>
-                  All rights reserved <a href="#">Jack Reacher Ltd</a>
-                </p>
-              </div>
+          <footer style={{ marginTop: "auto", paddingTop: "1rem" }}>
+            <div className="footer clearfix mb-0 text-muted d-flex justify-content-between align-items-center">
+              <p className="mb-0" style={{ fontSize: "0.8rem", color: "#6B7280" }}>2026 &copy; Tiba HMIS</p>
+              <p className="mb-0" style={{ fontSize: "0.8rem", color: "#6B7280" }}>
+                All rights reserved <a href="#" style={{ color: "#435ebe" }}>Jack Reacher Ltd</a>
+              </p>
             </div>
           </footer>
         </div>
