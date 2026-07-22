@@ -20,15 +20,11 @@ export default function Topbar({ onMenu }: Props) {
             <Icon name="menu" size={24} />
           </a>
 
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-            <li className="nav-item me-3">
-              <a className="nav-link active" href="#" role="button">
-                <Icon name="bell" size={22} className="text-gray-600" />
-              </a>
-            </li>
-          </ul>
+          <div className="ms-auto d-flex align-items-center gap-3">
+            <a className="nav-link active" href="#" role="button">
+              <Icon name="bell" size={22} className="text-gray-600" />
+            </a>
 
-          <div className="d-flex align-items-center gap-3">
             <div className="user-menu d-flex align-items-center">
               <div className="user-name text-end me-3">
                 <h6 className="mb-0">{displayName}</h6>
@@ -51,7 +47,7 @@ export default function Topbar({ onMenu }: Props) {
               title="Log out"
             >
               <Icon name="logout" size={18} />
-              <span className="d-none d-sm-inline">Logout</span>
+              <span className="d-none d-sm:inline">Logout</span>
             </button>
           </div>
         </div>
