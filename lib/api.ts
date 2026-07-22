@@ -44,6 +44,13 @@ export interface ApiError {
   detail: string;
 }
 
+export interface Page<T> {
+  items: T[];
+  next_cursor: string | null;
+  prev_cursor: string | null;
+  has_more: boolean;
+}
+
 // ── HTTP helpers ─────────────────────────────────────────────────────────────
 
 async function request<T>(
@@ -70,6 +77,19 @@ async function request<T>(
   return res.json() as Promise<T>;
 }
 
+// ── Paginated requests ───────────────────────────────────────────────────────
+
+async function paginatedRequest<T>(
+  path: string,
+  params?: { cursor?: string; limit?: number }
+): Promise<Page<T>> {
+  const sp = new URLSearchParams();
+  if (params?.cursor) sp.set("cursor", params.cursor);
+  if (params?.limit) sp.set("limit", String(params.limit));
+  const qs = sp.toString();
+  return request<Page<T>>("GET", `${path}?${qs}`);
+}
+
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
 export const auth = {
@@ -80,8 +100,8 @@ export const auth = {
 // ── Hospitals (super_admin only) ─────────────────────────────────────────────
 
 export const hospitals = {
-  list: (): Promise<HospitalRead[]> =>
-    request<HospitalRead[]>("GET", "/hospitals"),
+  list: (params?: { cursor?: string; limit?: number }): Promise<Page<HospitalRead>> =>
+    paginatedRequest<HospitalRead>("/hospitals", params),
 
   get: (id: string): Promise<HospitalRead> =>
     request<HospitalRead>("GET", `/hospitals/${id}`),
@@ -93,8 +113,8 @@ export const hospitals = {
 // ── Staff (admin+) ───────────────────────────────────────────────────────────
 
 export const staff = {
-  list: (): Promise<StaffRead[]> =>
-    request<StaffRead[]>("GET", "/staff"),
+  list: (params?: { cursor?: string; limit?: number }): Promise<Page<StaffRead>> =>
+    paginatedRequest<StaffRead>("/staff", params),
 
   get: (id: string): Promise<StaffRead> =>
     request<StaffRead>("GET", `/staff/${id}`),

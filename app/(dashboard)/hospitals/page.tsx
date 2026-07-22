@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { hospitals, type HospitalRead, type HospitalCreate } from "@/lib/api";
+import { hospitals, type HospitalRead, type HospitalCreate, type Page } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
+
+const PAGE_SIZE = 20;
 
 export default function HospitalsPage() {
   const { user } = useAuth();
-  const [hospitalList, setHospitalList] = useState<HospitalRead[]>([]);
+  const [page, setPage] = useState<Page<HospitalRead>>({
+    items: [],
+    next_cursor: null,
+    prev_cursor: null,
+    has_more: false,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -20,10 +27,10 @@ export default function HospitalsPage() {
     admin_password: "",
   });
 
-  const fetchHospitals = async () => {
+  const fetchHospitals = async (cursor?: string) => {
     try {
-      const data = await hospitals.list();
-      setHospitalList(data);
+      const data = await hospitals.list({ cursor, limit: PAGE_SIZE });
+      setPage(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load hospitals");
     } finally {
@@ -40,7 +47,10 @@ export default function HospitalsPage() {
     setError("");
     try {
       const result = await hospitals.create(formData as HospitalCreate);
-      setHospitalList([result.hospital, ...hospitalList]);
+      setPage((prev) => ({
+        ...prev,
+        items: [result.hospital, ...prev.items],
+      }));
       setShowCreateForm(false);
       setFormData({
         name: "",
@@ -198,41 +208,63 @@ export default function HospitalsPage() {
       )}
 
       <div className="card">
-        <div className="card-header">
+        <div className="card-header d-flex justify-content-between align-items-center">
           <h4>Hospital Directory</h4>
+          <span className="text-muted">{page.items.length > 0 ? `Showing ${page.items.length}` : ""}</span>
         </div>
         <div className="card-body">
           {loading ? (
             <div className="text-muted">Loading hospitals...</div>
-          ) : hospitalList.length === 0 ? (
+          ) : page.items.length === 0 ? (
             <div className="text-muted">No hospitals found.</div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Code</th>
-                    <th>Phone</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {hospitalList.map((h) => (
-                    <tr key={h.id}>
-                      <td className="font-bold">{h.name}</td>
-                      <td>{h.code}</td>
-                      <td>{h.phone || "—"}</td>
-                      <td>
-                        <span className={`badge ${h.is_active ? "bg-success" : "bg-secondary"}`}>
-                          {h.is_active ? "Active" : "Inactive"}
-                        </span>
-                      </td>
+            <>
+              <div className="table-responsive">
+                <table className="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Code</th>
+                      <th>Phone</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {page.items.map((h) => (
+                      <tr key={h.id}>
+                        <td className="font-bold">{h.name}</td>
+                        <td>{h.code}</td>
+                        <td>{h.phone || "—"}</td>
+                        <td>
+                          <span className={`badge ${h.is_active ? "bg-success" : "bg-secondary"}`}>
+                            {h.is_active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mt-3">
+                <button
+                  className="btn btn-light-primary"
+                  disabled={!page.prev_cursor}
+                  onClick={() => fetchHospitals(page.prev_cursor ?? undefined)}
+                >
+                  Previous
+                </button>
+                <span className="text-muted">
+                  {page.has_more ? "More pages available" : "End of list"}
+                </span>
+                <button
+                  className="btn btn-primary"
+                  disabled={!page.next_cursor}
+                  onClick={() => fetchHospitals(page.next_cursor ?? undefined)}
+                >
+                  Next
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>

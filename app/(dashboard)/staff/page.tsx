@@ -1,13 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { staff, type HospitalRead, type HospitalCreate, type StaffCreate } from "@/lib/api";
+import { staff, type StaffCreate, type Page } from "@/lib/api";
 import type { StaffRead, RoleRead } from "@/lib/types";
 import { useAuth } from "@/lib/auth-context";
 
+const PAGE_SIZE = 20;
+
 export default function StaffPage() {
   const { user } = useAuth();
-  const [staffList, setStaffList] = useState<StaffRead[]>([]);
+  const [page, setPage] = useState<Page<StaffRead>>({
+    items: [],
+    next_cursor: null,
+    prev_cursor: null,
+    has_more: false,
+  });
   const [roles, setRoles] = useState<RoleRead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -20,13 +27,13 @@ export default function StaffPage() {
     role_id: "",
   });
 
-  const fetchStaff = async () => {
+  const fetchPage = async (cursor?: string) => {
     try {
-      const [staffData, rolesData] = await Promise.all([
-        staff.list(),
+      const [pageData, rolesData] = await Promise.all([
+        staff.list({ cursor, limit: PAGE_SIZE }),
         staff.roles(),
       ]);
-      setStaffList(staffData);
+      setPage(pageData);
       setRoles(rolesData);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load staff");
@@ -36,7 +43,7 @@ export default function StaffPage() {
   };
 
   useEffect(() => {
-    fetchStaff();
+    fetchPage();
   }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -44,7 +51,10 @@ export default function StaffPage() {
     setError("");
     try {
       const newStaff = await staff.create(formData as StaffCreate);
-      setStaffList([newStaff, ...staffList]);
+      setPage((prev) => ({
+        ...prev,
+        items: [newStaff, ...prev.items],
+      }));
       setShowCreateForm(false);
       setFormData({ full_name: "", email: "", phone: "", password: "", role_id: "" });
     } catch (err) {
@@ -53,6 +63,8 @@ export default function StaffPage() {
   };
 
   const canCreateStaff = user?.role?.name === "admin" || user?.role?.name === "super_admin";
+
+  const items = page.items;
 
   return (
     <>
@@ -178,41 +190,63 @@ export default function StaffPage() {
       )}
 
       <div className="card">
-        <div className="card-header">
+        <div className="card-header d-flex justify-content-between align-items-center">
           <h4>Staff Directory</h4>
+          <span className="text-muted">{items.length > 0 ? `Showing ${items.length}` : ""}</span>
         </div>
         <div className="card-body">
           {loading ? (
             <div className="text-muted">Loading staff...</div>
-          ) : staffList.length === 0 ? (
+          ) : items.length === 0 ? (
             <div className="text-muted">No staff found.</div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {staffList.map((s) => (
-                    <tr key={s.id}>
-                      <td className="font-bold">{s.full_name}</td>
-                      <td>{s.email}</td>
-                      <td>{s.role?.name || "—"}</td>
-                      <td>
-                        <span className={`badge ${s.is_active ? "bg-success" : "bg-secondary"}`}>
-                          {s.is_active ? "Active" : "Inactive"}
-                        </span>
-                      </td>
+            <>
+              <div className="table-responsive">
+                <table className="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Status</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {items.map((s) => (
+                      <tr key={s.id}>
+                        <td className="font-bold">{s.full_name}</td>
+                        <td>{s.email}</td>
+                        <td>{s.role?.name || "—"}</td>
+                        <td>
+                          <span className={`badge ${s.is_active ? "bg-success" : "bg-secondary"}`}>
+                            {s.is_active ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="d-flex justify-content-between align-items-center mt-3">
+                <button
+                  className="btn btn-light-primary"
+                  disabled={!page.prev_cursor}
+                  onClick={() => fetchPage(page.prev_cursor ?? undefined)}
+                >
+                  Previous
+                </button>
+                <span className="text-muted">
+                  {page.has_more ? "More pages available" : "End of list"}
+                </span>
+                <button
+                  className="btn btn-primary"
+                  disabled={!page.next_cursor}
+                  onClick={() => fetchPage(page.next_cursor ?? undefined)}
+                >
+                  Next
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>
