@@ -6,7 +6,7 @@ import type { StaffRead } from "@/lib/types";
 const isProduction = process.env.NODE_ENV === "production";
 
 async function fetchStaffMe(token: string): Promise<Response> {
-  return fetch(`${API_BASE}//staff/me`, {
+  return fetch(`${API_BASE}/staff/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: "application/json",

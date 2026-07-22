@@ -24,7 +24,7 @@ async function proxyRequest(request: NextRequest, path: string[]) {
   let accessToken = cookieStore.get(ACCESS_TOKEN_COOKIE)?.value;
   const refreshToken = cookieStore.get(REFRESH_TOKEN_COOKIE)?.value;
 
-  const backendUrl = `${API_BASE}//${path.join("/")}`;
+  const backendUrl = `${API_BASE}/${path.join("/")}`;
   const searchParams = request.nextUrl.searchParams.toString();
   const url = searchParams ? `${backendUrl}?${searchParams}` : backendUrl;
 
