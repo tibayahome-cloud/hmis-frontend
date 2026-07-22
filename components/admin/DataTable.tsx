@@ -28,13 +28,7 @@ export default function DataTable<T>({
   className = "",
 }: DataTableProps<T>) {
   return (
-    <div className={`card ${className}`}>
-      <div className="card-header d-flex justify-content-between align-items-center">
-        <div>
-          <h4 className="mb-0">{title}</h4>
-          {description && <small className="text-muted">{description}</small>}
-        </div>
-      </div>
+    <div className={className}>
       <div className="card-body">
         {loading ? (
           <div className="text-muted">Loading...</div>
