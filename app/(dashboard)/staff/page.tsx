@@ -192,12 +192,12 @@ export default function StaffPage() {
       <div className="card">
         <div className="card-header d-flex justify-content-between align-items-center">
           <h4>Staff Directory</h4>
-          <span className="text-muted">{items.length > 0 ? `Showing ${items.length}` : ""}</span>
+          <span className="text-muted">{(items?.length ?? 0) > 0 ? `Showing ${items.length}` : ""}</span>
         </div>
         <div className="card-body">
           {loading ? (
             <div className="text-muted">Loading staff...</div>
-          ) : items.length === 0 ? (
+          ) : (items?.length ?? 0) === 0 ? (
             <div className="text-muted">No staff found.</div>
           ) : (
             <>
