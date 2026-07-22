@@ -20,20 +20,26 @@ export default function AppShell({
   children: React.ReactNode;
   title?: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const heading = title ?? "Dashboard";
 
   return (
     <div id="app" style={{ display: "flex", minHeight: "100vh" }}>
-      <Sidebar open={open} onNavigate={() => setOpen(false)} />
-      {open && (
+      <Sidebar
+        open={sidebarOpen}
+        onNavigate={() => setSidebarOpen(false)}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed((v) => !v)}
+      />
+      {sidebarOpen && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={() => setSidebarOpen(false)}
           style={{ position: "fixed", inset: 0, zIndex: 9, background: "rgba(0,0,0,0.3)" }}
         />
       )}
       <div id="main" className="layout-navbar" style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
-        <Topbar onMenu={() => setOpen((v) => !v)} />
+        <Topbar onMenu={() => setSidebarOpen((v) => !v)} />
         <div id="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", padding: "2rem" }}>
           {children}
           <footer style={{ marginTop: "auto" }}>
