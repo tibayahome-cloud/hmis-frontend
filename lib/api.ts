@@ -87,7 +87,16 @@ async function paginatedRequest<T>(
   if (params?.cursor) sp.set("cursor", params.cursor);
   if (params?.limit) sp.set("limit", String(params.limit));
   const qs = sp.toString();
-  return request<Page<T>>("GET", `${path}?${qs}`);
+  const res = await request<any>("GET", `${path}?${qs}`);
+  if (Array.isArray(res)) {
+    return {
+      items: res,
+      next_cursor: null,
+      prev_cursor: null,
+      has_more: false,
+    };
+  }
+  return res;
 }
 
 // ── Auth ─────────────────────────────────────────────────────────────────────

@@ -30,22 +30,32 @@ export default function DataTable<T>({
   return (
     <div className={className}>
       <div className="card-body">
-        {loading ? (
-          <div className="text-muted">Loading...</div>
-        ) : items.length === 0 ? (
-          <div className="text-muted">{empty ?? "No records found."}</div>
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-hover align-middle">
-              <thead>
+        <div className="table-responsive">
+          <table className="table table-hover align-middle">
+            <thead>
+              <tr>
+                {columns.map((column) => (
+                  <th key={String(column.key)}>{column.label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
                 <tr>
-                  {columns.map((column) => (
-                    <th key={String(column.key)}>{column.label}</th>
-                  ))}
+                  <td colSpan={columns.length} className="text-center py-4 text-muted" style={{ color: "var(--muted)" }}>
+                    <div className="d-flex align-items-center justify-content-center gap-2">
+                      <span>Loading records...</span>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {items.map((item, idx) => (
+              ) : items.length === 0 ? (
+                <tr>
+                  <td colSpan={columns.length} className="text-center py-5 text-muted" style={{ color: "var(--muted)" }}>
+                    {empty ?? "No records found."}
+                  </td>
+                </tr>
+              ) : (
+                items.map((item, idx) => (
                   <tr key={idx}>
                     {columns.map((column) => (
                       <td key={String(column.key)}>
@@ -55,13 +65,13 @@ export default function DataTable<T>({
                       </td>
                     ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-      {footer && <div className="card-footer bg-transparent">{footer}</div>}
+      {footer && <div className="card-footer bg-transparent border-top-0 pt-0 pb-4 px-4">{footer}</div>}
     </div>
   );
 }
