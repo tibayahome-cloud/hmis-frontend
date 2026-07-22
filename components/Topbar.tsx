@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function Topbar({ onMenu }: Props) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const displayName = user?.full_name || "Staff User";
   const displayRole = user?.role?.name || "Administrator";
 
@@ -16,7 +16,7 @@ export default function Topbar({ onMenu }: Props) {
     <header className="mb-3">
       <nav className="navbar navbar-expand navbar-light">
         <div className="container-fluid" style={{ padding: 0 }}>
-          <a href="#" className="burger-btn d-block d-lg-none" onClick={onMenu}>
+          <a href="#" className="burger-btn d-lg-none" onClick={onMenu}>
             <Icon name="menu" size={24} />
           </a>
 
@@ -25,12 +25,12 @@ export default function Topbar({ onMenu }: Props) {
               <Icon name="bell" size={22} className="text-gray-600" />
             </a>
 
-            <div className="user-menu d-flex align-items-center">
+            <div className="user-menu d-flex align-items-center" style={{ cursor: "pointer" }}>
               <div className="user-name text-end me-3">
                 <h6 className="mb-0 fw-semibold" style={{ color: "var(--body-color)" }}>{displayName}</h6>
                 <p className="mb-0 text-muted" style={{ fontSize: "0.72rem", color: "var(--muted)", textTransform: "capitalize" }}>{displayRole}</p>
               </div>
-              <div className="user-img d-flex align-items-center me-2">
+              <div className="user-img d-flex align-items-center">
                 <div className="avatar avatar-md">
                   <img
                     src={`https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=435ebe&color=fff`}
@@ -40,15 +40,6 @@ export default function Topbar({ onMenu }: Props) {
                 </div>
               </div>
             </div>
-
-            <button
-              onClick={logout}
-              className="btn btn-light-primary btn-sm d-flex align-items-center gap-1 font-bold"
-              title="Log out"
-            >
-              <Icon name="logout" size={16} />
-              <span className="d-none d-sm:inline">Logout</span>
-            </button>
           </div>
         </div>
       </nav>
