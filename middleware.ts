@@ -12,6 +12,7 @@ const AUTH_SECRET = new TextEncoder().encode(
 const PUBLIC_PATHS = [
   "/login",
   "/api/auth/login",
+  "/api/auth/me",
   "/api/auth/refresh",
   "/api/auth/logout",
 ];
