@@ -5,9 +5,9 @@ import { ACCESS_TOKEN_COOKIE } from "@/lib/constants";
 /** Paths that do not require authentication. */
 const PUBLIC_PATHS = [
   "/login",
-  "/auth/login",
-  "/auth/refresh",
-  "/auth/logout",
+  "/api/auth/login",
+  "/api/auth/refresh",
+  "/api/auth/logout",
 ];
 
 /** Static assets and Next.js internals — never block these. */
