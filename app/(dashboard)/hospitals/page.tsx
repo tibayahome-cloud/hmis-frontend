@@ -101,7 +101,10 @@ export default function HospitalsPage() {
         <div className="col-12">
           <div className="card reveal" style={{ ["--d" as string]: "220ms" }}>
             <div className="card-header d-flex justify-content-between align-items-center">
-              <h4 className="mb-0">Hospital Directory</h4>
+              <div>
+                <h4 className="mb-0">Hospital Directory</h4>
+                <small className="text-muted">All registered hospitals.</small>
+              </div>
               <button
                 className="btn btn-primary"
                 onClick={() => setShowForm((prev) => !prev)}
@@ -211,7 +214,7 @@ export default function HospitalsPage() {
 
             <DataTable<HospitalRead>
               title="Hospital Directory"
-              description=""
+              description={`${page?.items?.length ?? 0} hospitals`}
               columns={[
                 {
                   key: "name",

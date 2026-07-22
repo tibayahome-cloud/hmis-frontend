@@ -18,7 +18,7 @@ export default function StaffPage() {
   const [formData, setFormData] = useState<StaffCreate>({
     full_name: "",
     email: "",
-    phone: null,
+    phone: "",
     password: "",
     role_id: "",
   });
@@ -65,7 +65,7 @@ export default function StaffPage() {
       setFormData({
         full_name: "",
         email: "",
-        phone: null,
+        phone: "",
         password: "",
         role_id: "",
       });
@@ -109,7 +109,10 @@ export default function StaffPage() {
         <div className="col-12">
           <div className="card reveal" style={{ ["--d" as string]: "220ms" }}>
             <div className="card-header d-flex justify-content-between align-items-center">
-              <h4 className="mb-0">Staff Directory</h4>
+              <div>
+                <h4 className="mb-0">Staff Directory</h4>
+                <small className="text-muted">All hospital staff accounts.</small>
+              </div>
               <button
                 className="btn btn-primary"
                 onClick={() => setShowForm((prev) => !prev)}
@@ -205,7 +208,7 @@ export default function StaffPage() {
 
             <DataTable<StaffRead>
               title="Staff Directory"
-              description={`${page?.items?.length ?? 0} of ${page?.items?.length ?? 0}`}
+              description={`${page?.items?.length ?? 0} staff records`}
               columns={[
                 {
                   key: "full_name",

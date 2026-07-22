@@ -24,7 +24,7 @@ export default function AppShell({
   const heading = title ?? "Dashboard";
 
   return (
-    <div id="app">
+    <div id="app" style={{ display: "flex", minHeight: "100vh" }}>
       <Sidebar open={open} onNavigate={() => setOpen(false)} />
       {open && (
         <div
@@ -32,11 +32,11 @@ export default function AppShell({
           style={{ position: "fixed", inset: 0, zIndex: 9, background: "rgba(0,0,0,0.3)" }}
         />
       )}
-      <div id="main" className="layout-navbar">
+      <div id="main" className="layout-navbar" style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0 }}>
         <Topbar onMenu={() => setOpen((v) => !v)} />
-        <div id="main-content">
+        <div id="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", padding: "2rem" }}>
           {children}
-          <footer>
+          <footer style={{ marginTop: "auto" }}>
             <div className="footer clearfix mb-0 text-muted">
               <div className="float-start">
                 <p>2026 &copy; Tiba HMIS</p>

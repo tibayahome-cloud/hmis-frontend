@@ -64,28 +64,24 @@ export default function DashboardPage() {
       </div>
 
       <section className="row g-4">
-        <div className="col-12 col-xl-8">
-          <div className="card reveal" style={{ ["--d" as string]: "200ms" }}>
+        <div className="col-12 col-xl-4">
+          <div className="card reveal h-100" style={{ ["--d" as string]: "200ms" }}>
             <div className="card-header border-0 pt-4 pb-0">
-              <div>
-                <h4 className="mb-1">Profile</h4>
-                <small className="text-muted">Your current session identity.</small>
-              </div>
+              <h4 className="mb-1">Profile</h4>
+              <small className="text-muted">Your current session identity.</small>
             </div>
             <div className="card-body">
               {loading ? (
                 <div className="text-muted">Loading profile...</div>
               ) : profile ? (
-                <div className="d-flex align-items-center justify-content-between flex-wrap gap-3">
-                  <div>
-                    <div className="fw-semibold" style={{ fontSize: "1.1rem" }}>
-                      {profile.full_name}
-                    </div>
-                    <div className="text-muted" style={{ fontSize: "0.9rem" }}>
-                      {profile.email}
-                    </div>
+                <div>
+                  <div className="fw-semibold" style={{ fontSize: "1.1rem" }}>
+                    {profile.full_name}
                   </div>
-                  <div className="d-flex gap-2">
+                  <div className="text-muted" style={{ fontSize: "0.9rem" }}>
+                    {profile.email}
+                  </div>
+                  <div className="d-flex gap-2 mt-3">
                     <span className="badge bg-primary">{profile.role?.name || "Staff"}</span>
                     <span className={`badge ${profile.is_active ? "bg-success" : "bg-secondary"}`}>
                       {profile.is_active ? "Active" : "Inactive"}
@@ -99,27 +95,6 @@ export default function DashboardPage() {
 
         <div className="col-12 col-xl-4">
           <div className="card reveal h-100" style={{ ["--d" as string]: "240ms" }}>
-            <div className="card-header border-0 pt-4 pb-0">
-              <h4 className="mb-1">Quick actions</h4>
-              <small className="text-muted">Common admin tasks.</small>
-            </div>
-            <div className="card-body">
-              <div className="d-grid gap-2">
-                <a href="/staff" className="btn btn-primary">
-                  Manage staff
-                </a>
-                {(role === "super_admin") && (
-                  <a href="/hospitals" className="btn btn-outline-primary">
-                    Manage hospitals
-                  </a>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-12 col-xl-4">
-          <div className="card reveal h-100" style={{ ["--d" as string]: "280ms" }}>
             <div className="card-header border-0 pt-4 pb-0">
               <h4 className="mb-1">Role</h4>
               <small className="text-muted">Authorized access level.</small>
@@ -136,17 +111,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="col-12 col-xl-8">
-          <div className="card reveal" style={{ ["--d" as string]: "320ms" }}>
+        <div className="col-12 col-xl-4">
+          <div className="card reveal h-100" style={{ ["--d" as string]: "280ms" }}>
             <div className="card-header border-0 pt-4 pb-0">
-              <h4 className="mb-1">Context</h4>
-              <small className="text-muted">What this dashboard is for.</small>
+              <h4 className="mb-1">Quick actions</h4>
+              <small className="text-muted">Common admin tasks.</small>
             </div>
             <div className="card-body">
-              <div className="text-muted" style={{ fontSize: "0.95rem", lineHeight: 1.6 }}>
-                Use the sidebar to run setup and administration tasks.
-                Modules for patients, visits, billing, pharmacy, admissions,
-                ward operations, and reporting will appear here as they are enabled.
+              <div className="d-grid gap-2">
+                <a href="/staff" className="btn btn-primary">
+                  Manage staff
+                </a>
+                {(role === "super_admin") && (
+                  <a href="/hospitals" className="btn btn-outline-primary">
+                    Manage hospitals
+                  </a>
+                )}
               </div>
             </div>
           </div>
