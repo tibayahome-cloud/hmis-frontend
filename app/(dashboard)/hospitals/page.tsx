@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { hospitals, type HospitalRead, type HospitalCreate, type Page } from "@/lib/api";
+import DataTable from "@/components/admin/DataTable";
 
 const PAGE_SIZE = 10;
 
