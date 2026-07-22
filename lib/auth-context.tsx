@@ -22,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = useCallback(async () => {
     try {
-      const res = await fetch("/api/auth/me");
+      const res = await fetch("//auth/me");
       if (res.ok) {
         const data = (await res.json()) as StaffRead;
         setUser(data);
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshUser]);
 
   const login = useCallback(async (credentials: LoginRequest): Promise<{ error?: string }> => {
-    const res = await fetch("/api/auth/login", {
+    const res = await fetch("//auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refreshUser]);
 
   const logout = useCallback(async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await fetch("//auth/logout", { method: "POST" });
     setUser(null);
     router.push("/login");
   }, [router]);

@@ -14,7 +14,7 @@ async function get<T>(path: string): Promise<T> {
 }
 
 export const api = {
-  // patients: () => get<Patient[]>("/api/patients"),
-  // visits: () => get<Visit[]>("/api/visits"),
-  // queue: () => get<QueuePatient[]>("/api/queue"),
+  // patients: () => get<Patient[]>("/patients"),
+  // visits: () => get<Visit[]>("/visits"),
+  // queue: () => get<QueuePatient[]>("/queue"),
 };
