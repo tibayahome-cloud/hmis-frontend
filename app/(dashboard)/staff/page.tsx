@@ -1,255 +1,278 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { staff, type StaffCreate, type Page } from "@/lib/api";
+import { staff } from "@/lib/api";
+import DataTable from "@/components/admin/DataTable";
 import type { StaffRead, RoleRead } from "@/lib/types";
-import { useAuth } from "@/lib/auth-context";
+import type { Page, StaffCreate } from "@/lib/api";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
 
 export default function StaffPage() {
-  const { user } = useAuth();
-  const [page, setPage] = useState<Page<StaffRead>>({
-    items: [],
-    next_cursor: null,
-    prev_cursor: null,
-    has_more: false,
-  });
+  const [page, setPage] = useState<Page<StaffRead> | null>(null);
   const [roles, setRoles] = useState<RoleRead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [formData, setFormData] = useState({
+  const [cursor, setCursor] = useState<string | undefined>(undefined);
+  const [showForm, setShowForm] = useState(false);
+
+  const [formData, setFormData] = useState<StaffCreate>({
     full_name: "",
     email: "",
-    phone: "",
+    phone: null,
     password: "",
     role_id: "",
   });
+  const [formLoading, setFormLoading] = useState(false);
+  const [formError, setFormError] = useState("");
 
-  const fetchPage = async (cursor?: string) => {
+  async function loadRoles() {
     try {
-      const [pageData, rolesData] = await Promise.all([
-        staff.list({ cursor, limit: PAGE_SIZE }),
-        staff.roles(),
-      ]);
-      setPage(pageData);
-      setRoles(rolesData);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load staff");
-    } finally {
-      setLoading(false);
+      setRoles(await staff.roles());
+    } catch {
+      // non-blocking
     }
-  };
+  }
+
+  async function loadPage(targetCursor?: string) {
+    const result = await staff.list({ cursor: targetCursor, limit: PAGE_SIZE });
+    setPage(result);
+    setCursor(targetCursor);
+  }
 
   useEffect(() => {
-    fetchPage();
+    let cancelled = false;
+    setLoading(true);
+
+    async function init() {
+      await loadRoles();
+      await loadPage(undefined);
+      if (!cancelled) setLoading(false);
+    }
+
+    init();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
+    setFormError("");
+    setFormLoading(true);
+
     try {
-      const newStaff = await staff.create(formData as StaffCreate);
-      setPage((prev) => ({
-        ...prev,
-        items: [newStaff, ...prev.items],
-      }));
-      setShowCreateForm(false);
-      setFormData({ full_name: "", email: "", phone: "", password: "", role_id: "" });
+      await staff.create(formData);
+      setFormData({
+        full_name: "",
+        email: "",
+        phone: null,
+        password: "",
+        role_id: "",
+      });
+      setShowForm(false);
+      await loadPage(cursor);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create staff");
+      setFormError(err instanceof Error ? err.message : "Failed to create staff.");
+    } finally {
+      setFormLoading(false);
     }
-  };
-
-  const canCreateStaff = user?.role?.name === "admin" || user?.role?.name === "super_admin";
-
-  const items = page.items;
+  }
 
   return (
     <>
       <div className="page-heading">
         <div className="page-title">
           <div className="row">
-            <div className="col-12 col-md-6">
-              <h3>Staff Management</h3>
+            <div className="col-12 col-md-6 order-md-1 order-last">
+              <h3>Staff</h3>
               <p className="text-subtitle text-muted">
-                {user?.role?.name === "super_admin"
-                  ? "Manage staff across all hospitals."
-                  : "Manage staff for your hospital."}
+                Manage staff accounts and role assignments.
               </p>
             </div>
-            <div className="col-12 col-md-6 d-flex align-items-center justify-content-md-end">
-              {canCreateStaff && (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setShowCreateForm(true)}
-                >
-                  + New Staff
-                </button>
-              )}
+            <div className="col-12 col-md-6 order-md-2 order-first">
+              <nav aria-label="breadcrumb" className="breadcrumb-header float-start float-lg-end">
+                <ol className="breadcrumb">
+                  <li className="breadcrumb-item">
+                    <a href="/">Dashboard</a>
+                  </li>
+                  <li className="breadcrumb-item active" aria-current="page">
+                    Staff
+                  </li>
+                </ol>
+              </nav>
             </div>
           </div>
         </div>
       </div>
 
-      {error && (
-        <div className="alert alert-danger" role="alert">
-          {error}
-        </div>
-      )}
+      <section className="row">
+        <div className="col-12">
+          <div className="card reveal" style={{ ["--d" as string]: "220ms" }}>
+            <div className="card-header d-flex justify-content-between align-items-center">
+              <h4 className="mb-0">Staff Directory</h4>
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowForm((prev) => !prev)}
+              >
+                {showForm ? "Close" : "Create staff"}
+              </button>
+            </div>
 
-      {showCreateForm && (
-        <div className="card reveal">
-          <div className="card-header">
-            <h4>Create New Staff</h4>
-          </div>
-          <div className="card-body">
-            <form onSubmit={handleCreate}>
-              <div className="row">
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label className="form-label">Full Name</label>
-                    <input
-                      className="form-control"
-                      value={formData.full_name}
-                      onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                      required
-                    />
+            {showForm && (
+              <div className="card-body border-bottom">
+                <form onSubmit={handleSubmit}>
+                  <div className="row g-3">
+                    <div className="col-md-4">
+                      <label className="form-label">Full name</label>
+                      <input
+                        className="form-control"
+                        required
+                        value={formData.full_name}
+                        onChange={(e) =>
+                          setFormData({ ...formData, full_name: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Email</label>
+                      <input
+                        className="form-control"
+                        type="email"
+                        required
+                        value={formData.email}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Password</label>
+                      <input
+                        className="form-control"
+                        type="password"
+                        required
+                        minLength={8}
+                        value={formData.password}
+                        onChange={(e) =>
+                          setFormData({ ...formData, password: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Role</label>
+                      <select
+                        className="form-select"
+                        required
+                        value={formData.role_id}
+                        onChange={(e) =>
+                          setFormData({ ...formData, role_id: e.target.value })
+                        }
+                      >
+                        <option value="">Select a role</option>
+                        {roles.map((role) => (
+                          <option key={role.id} value={role.id}>
+                            {role.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Phone</label>
+                      <input
+                        className="form-control"
+                        value={formData.phone ?? ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value || null })
+                        }
+                      />
+                    </div>
+                    <div className="col-md-4 d-flex align-items-end">
+                      <button type="submit" className="btn btn-primary" disabled={formLoading}>
+                        {formLoading ? "Creating..." : "Create"}
+                      </button>
+                    </div>
+                    {formError && (
+                      <div className="col-12">
+                        <div className="alert alert-danger" role="alert">
+                          {formError}
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label className="form-label">Email</label>
-                    <input
-                      className="form-control"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label className="form-label">Phone</label>
-                    <input
-                      className="form-control"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="mb-3">
-                    <label className="form-label">Password</label>
-                    <input
-                      className="form-control"
-                      type="password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                      required
-                      minLength={8}
-                    />
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="mb-3">
-                    <label className="form-label">Role</label>
-                    <select
-                      className="form-select"
-                      value={formData.role_id}
-                      onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
-                      required
+                </form>
+              </div>
+            )}
+
+            <DataTable<StaffRead>
+              title="Staff Directory"
+              description={`${page?.items?.length ?? 0} of ${page?.items?.length ?? 0}`}
+              columns={[
+                {
+                  key: "full_name",
+                  label: "Name",
+                  render: (item) => <span className="fw-semibold">{item.full_name}</span>,
+                },
+                { key: "email", label: "Email" },
+                {
+                  key: "role",
+                  label: "Role",
+                  render: (item) => (
+                    <span className={`badge ${item.role?.name === "super_admin" || item.role?.name === "admin" ? "bg-primary" : "bg-light text-dark border"}`}>
+                      {item.role?.name ?? "—"}
+                    </span>
+                  ),
+                },
+                {
+                  key: "is_active",
+                  label: "Status",
+                  render: (item) => (
+                    <span
+                      className={`badge ${item.is_active ? "bg-success" : "bg-secondary"}`}
                     >
-                      <option value="">Select a role</option>
-                      {roles.map((role) => (
-                        <option key={role.id} value={role.id}>
-                          {role.name}
-                        </option>
-                      ))}
-                    </select>
+                      {item.is_active ? "Active" : "Inactive"}
+                    </span>
+                  ),
+                },
+              ]}
+              items={page?.items ?? []}
+              loading={loading}
+              empty="No staff found. Create one above."
+              footer={
+                page ? (
+                  <div className="d-flex justify-content-between align-items-center">
+                    <small className="text-muted">
+                      {cursor ? (
+                        <>
+                          Showing page{" "}
+                          <code>{cursor.slice(0, 8)}</code>
+                        </>
+                      ) : (
+                        "First page"
+                      )}
+                    </small>
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-sm btn-light-primary"
+                        disabled={!page.prev_cursor}
+                        onClick={() => loadPage(page.prev_cursor ?? undefined)}
+                      >
+                        Prev
+                      </button>
+                      <button
+                        className="btn btn-sm btn-light-primary"
+                        disabled={!page.has_more}
+                        onClick={() => loadPage(page.next_cursor ?? undefined)}
+                      >
+                        Next
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <div className="col-12 d-flex gap-2">
-                  <button type="submit" className="btn btn-primary">
-                    Create Staff
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-light-primary"
-                    onClick={() => setShowCreateForm(false)}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </form>
+                ) : null
+              }
+            />
           </div>
         </div>
-      )}
-
-      <div className="card">
-        <div className="card-header d-flex justify-content-between align-items-center">
-          <h4>Staff Directory</h4>
-          <span className="text-muted">{(items?.length ?? 0) > 0 ? `Showing ${items.length}` : ""}</span>
-        </div>
-        <div className="card-body">
-          {loading ? (
-            <div className="text-muted">Loading staff...</div>
-          ) : (items?.length ?? 0) === 0 ? (
-            <div className="text-muted">No staff found.</div>
-          ) : (
-            <>
-              <div className="table-responsive">
-                <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Role</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {items.map((s) => (
-                      <tr key={s.id}>
-                        <td className="font-bold">{s.full_name}</td>
-                        <td>{s.email}</td>
-                        <td>{s.role?.name || "—"}</td>
-                        <td>
-                          <span className={`badge ${s.is_active ? "bg-success" : "bg-secondary"}`}>
-                            {s.is_active ? "Active" : "Inactive"}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="d-flex justify-content-between align-items-center mt-3">
-                <button
-                  className="btn btn-light-primary"
-                  disabled={!page.prev_cursor}
-                  onClick={() => fetchPage(page.prev_cursor ?? undefined)}
-                >
-                  Previous
-                </button>
-                <span className="text-muted">
-                  {page.has_more ? "More pages available" : "End of list"}
-                </span>
-                <button
-                  className="btn btn-primary"
-                  disabled={!page.next_cursor}
-                  onClick={() => fetchPage(page.next_cursor ?? undefined)}
-                >
-                  Next
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+      </section>
     </>
   );
 }
