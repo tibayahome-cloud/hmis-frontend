@@ -1,11 +1,6 @@
-import Link from "next/link";
-import { VISITS } from "@/lib/mock-data";
+"use client";
 
-const DISPOSITION: Record<string, string> = {
-  Complete: "bg-success",
-  "In progress": "bg-warning",
-  Waiting: "bg-info",
-};
+import UnderConstruction from "@/components/UnderConstruction";
 
 export default function VisitsPage() {
   return (
@@ -17,50 +12,15 @@ export default function VisitsPage() {
               <h3>Visits</h3>
               <p className="text-subtitle text-muted">Every encounter logged today.</p>
             </div>
-            <div className="col-12 col-md-6 d-flex align-items-center justify-content-md-end">
-              <Link href="/visits/new" className="btn btn-primary">
-                + New Visit
-              </Link>
-            </div>
           </div>
         </div>
       </div>
 
-      <div className="card reveal">
-        <div className="card-header">
-          <h4>Visit log</h4>
-        </div>
-        <div className="card-body">
-          <div className="table-responsive">
-            <table className="table table-hover">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Patient</th>
-                  <th>Clinician</th>
-                  <th>Department</th>
-                  <th>Time</th>
-                  <th>Disposition</th>
-                </tr>
-              </thead>
-              <tbody>
-                {VISITS.map((v) => (
-                  <tr key={v.id}>
-                    <td className="font-bold">{v.id}</td>
-                    <td>{v.patient}</td>
-                    <td>{v.clinician}</td>
-                    <td className="text-muted">{v.department}</td>
-                    <td className="text-muted">{v.time}</td>
-                    <td>
-                      <span className={`badge ${DISPOSITION[v.disposition]}`}>{v.disposition}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <UnderConstruction
+        title="Visit Log"
+        description="Visit tracking and encounter history will be available here soon. This feature is being prepared for your workflow."
+        icon="activity"
+      />
     </>
   );
 }
