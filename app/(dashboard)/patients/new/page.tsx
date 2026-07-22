@@ -93,10 +93,8 @@ export default function NewPatientPage() {
             </div>
             <div className="card-body">
               <p className="text-muted" style={{ fontSize: "0.9rem", lineHeight: 1.6 }}>
-                New registrations write to the patient table, then route to triage. This form is local only; wire the
-                submit handler to <code>lib/api.ts</code> when the backend accepts POSTs.
+                Registration and intake details will be saved to the patient record once backend endpoints are enabled.
               </p>
-              <div className="badge bg-success">Form is local only</div>
             </div>
           </div>
         </div>

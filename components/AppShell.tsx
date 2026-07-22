@@ -37,12 +37,12 @@ export default function AppShell({
         <div id="main-content" style={{ flex: 1, display: "flex", flexDirection: "column", padding: "2rem" }}>
           {children}
           <footer style={{ marginTop: "auto" }}>
-            <div className="footer clearfix mb-0 text-muted">
-              <div className="float-start">
-                <p>2026 &copy; Tiba HMIS</p>
+            <div className="footer clearfix mb-0 text-muted d-flex justify-content-between align-items-center">
+              <div>
+                <p className="mb-0">2026 &copy; Tiba HMIS</p>
               </div>
-              <div className="float-end">
-                <p>
+              <div>
+                <p className="mb-0">
                   All rights reserved <a href="#">Jack Reacher Ltd</a>
                 </p>
               </div>
