@@ -5,7 +5,6 @@ import type { LoginRequest, TokenPair, ApiError } from "@/lib/types";
 const isProduction = process.env.NODE_ENV === "production";
 
 export async function POST(request: Request) {
-  console.log("Using API_BASE:", API_BASE);
   let body: LoginRequest;
   try {
     body = (await request.json()) as LoginRequest;
@@ -15,7 +14,7 @@ export async function POST(request: Request) {
 
   let res: Response;
   try {
-    res = await fetch(`${API_BASE}//auth/login`, {
+    res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -47,12 +46,12 @@ export async function POST(request: Request) {
     secure: isProduction,
   });
 
-  // Refresh token — long-lived, scoped to //auth only to minimise exposure
+  // Refresh token — long-lived, scoped to /auth only to minimise exposure
   response.cookies.set({
     name: REFRESH_TOKEN_COOKIE,
     value: tokens.refresh_token,
     httpOnly: true,
-    path: "//auth",
+    path: "/auth",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 7, // 7 days
     secure: isProduction,
