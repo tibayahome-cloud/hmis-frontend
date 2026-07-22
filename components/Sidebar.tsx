@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/Icon";
 import { NAV } from "@/lib/nav";
+import { ROLE_ROUTES } from "@/lib/role-routes";
+import { useAuth } from "@/lib/auth-context";
 
 type Props = {
   open: boolean;
@@ -12,6 +14,15 @@ type Props = {
 
 export default function Sidebar({ open, onNavigate }: Props) {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const role = user?.role?.name || "";
+
+  // Filter nav groups to only show items the current role can access
+  const allowedRoutes = ROLE_ROUTES[role] || [];
+  const visibleNav = NAV.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => allowedRoutes.includes(item.href)),
+  })).filter((group) => group.items.length > 0);
 
   return (
     <div id="sidebar" className={open ? "active" : ""}>
@@ -27,7 +38,7 @@ export default function Sidebar({ open, onNavigate }: Props) {
         </div>
 
         <div className="sidebar-menu">
-          {NAV.map((group) => (
+          {visibleNav.map((group) => (
             <div key={group.label}>
               <div className="sidebar-title">{group.label}</div>
               <ul className="menu">

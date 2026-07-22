@@ -1,7 +1,9 @@
-import Link from "next/link";
+"use client";
+
 import StatCard from "@/components/StatCard";
 import VisitQueue from "@/components/VisitQueue";
 import { KPIS, QUEUE, VISITS } from "@/lib/mock-data";
+import { useAuth } from "@/lib/auth-context";
 
 const DISPOSITION: Record<string, string> = {
   Complete: "bg-success",
@@ -10,6 +12,9 @@ const DISPOSITION: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const role = user?.role?.name || "";
+
   return (
     <>
       <div className="page-heading">
@@ -17,13 +22,15 @@ export default function DashboardPage() {
           <div className="row">
             <div className="col-12 col-md-6 order-md-1 order-last">
               <h3>Dashboard</h3>
-              <p className="text-subtitle text-muted">Get real time analytics for your hospital.</p>
+              <p className="text-subtitle text-muted">
+                Get real time analytics for your hospital.
+              </p>
             </div>
             <div className="col-12 col-md-6 order-md-2 order-first">
               <nav aria-label="breadcrumb" className="breadcrumb-header float-start float-lg-end">
                 <ol className="breadcrumb">
                   <li className="breadcrumb-item">
-                    <Link href="/">Dashboard</Link>
+                    <a href="/">Dashboard</a>
                   </li>
                 </ol>
               </nav>
@@ -63,13 +70,16 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="row">
-            <div className="col-12">
-              <div className="reveal" style={{ ["--d" as string]: "260ms" }}>
-                <VisitQueue rows={QUEUE} />
+          {/* Role-specific widgets */}
+          {(role === "triage_nurse" || role === "doctor" || role === "ward_nurse") && (
+            <div className="row">
+              <div className="col-12">
+                <div className="reveal" style={{ ["--d" as string]: "260ms" }}>
+                  <VisitQueue rows={QUEUE} />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="col-12 col-lg-3">
@@ -117,9 +127,9 @@ export default function DashboardPage() {
                 </div>
               ))}
               <div style={{ padding: "1rem 1.5rem" }}>
-                <Link href="/visits" className="btn btn-light-primary font-bold w-100">
+                <a href="/visits" className="btn btn-light-primary font-bold w-100">
                   View all
-                </Link>
+                </a>
               </div>
             </div>
           </div>
