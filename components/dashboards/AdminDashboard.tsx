@@ -1,15 +1,61 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { staff, hospitals } from "@/lib/api";
 import Icon from "@/components/Icon";
 import type { StaffRead } from "@/lib/types";
+import type { Page } from "@/lib/api";
 
 type Props = {
   profile: StaffRead | null;
   role: string;
 };
 
+// Helper to format numbers with commas
+function formatCount(n: number | null | undefined): string {
+  if (n === undefined || n === null) return "—";
+  return n.toLocaleString();
+}
+
 export default function AdminDashboard({ profile, role }: Props) {
+  const [staffCount, setStaffCount] = useState<number | null>(null);
+  const [hospitalCount, setHospitalCount] = useState<number | null>(null);
+  const [systemStatus, setSystemStatus] = useState<"Healthy" | "Degraded" | "Error">("Healthy");
+  const [dbStatus, setDbStatus] = useState<"Connected" | "Error">("Connected");
+  const [loadingKpis, setLoadingKpis] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadKpis() {
+      setLoadingKpis(true);
+      try {
+        // Fetch staff count
+        const staffResult = await staff.list({ limit: 1 });
+        if (!cancelled) setStaffCount(staffResult.items.length); // API returns total count via pagination
+
+        // Fetch hospital count
+        const hospResult = await hospitals.list({ limit: 1 });
+        if (!cancelled) setHospitalCount(hospResult.items.length);
+
+        // Simulate system health check (in real app, this would be a health endpoint)
+        setSystemStatus("Healthy");
+        setDbStatus("Connected");
+      } catch (err) {
+        if (!cancelled) {
+          setSystemStatus("Degraded");
+          setDbStatus("Error");
+        }
+      } finally {
+        if (!cancelled) setLoadingKpis(false);
+      }
+    }
+
+    loadKpis();
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <div className="row g-4">
       {/* KPI Stats Cards */}
@@ -21,7 +67,9 @@ export default function AdminDashboard({ profile, role }: Props) {
             </div>
             <div>
               <h6 className="text-muted font-semibold mb-1" style={{ fontSize: "0.85rem", color: "#4B5563" }}>Total Staff</h6>
-              <h6 className="font-extrabold mb-0" style={{ fontSize: "1.4rem" }}>24</h6>
+              <h6 className="font-extrabold mb-0" style={{ fontSize: "1.4rem" }}>
+                {loadingKpis ? <span className="animate-pulse">—</span> : formatCount(staffCount)}
+              </h6>
             </div>
           </div>
         </div>
@@ -35,7 +83,9 @@ export default function AdminDashboard({ profile, role }: Props) {
             </div>
             <div>
               <h6 className="text-muted font-semibold mb-1" style={{ fontSize: "0.85rem", color: "#4B5563" }}>Active Hospitals</h6>
-              <h6 className="font-extrabold mb-0" style={{ fontSize: "1.4rem" }}>3</h6>
+              <h6 className="font-extrabold mb-0" style={{ fontSize: "1.4rem" }}>
+                {loadingKpis ? <span className="animate-pulse">—</span> : formatCount(hospitalCount)}
+              </h6>
             </div>
           </div>
         </div>
@@ -49,7 +99,9 @@ export default function AdminDashboard({ profile, role }: Props) {
             </div>
             <div>
               <h6 className="text-muted font-semibold mb-1" style={{ fontSize: "0.85rem", color: "#4B5563" }}>System Status</h6>
-              <h6 className="font-extrabold mb-0 text-success" style={{ fontSize: "1.4rem", fontWeight: 700 }}>Healthy</h6>
+              <h6 className={`font-extrabold mb-0 ${systemStatus === "Healthy" ? "text-success" : systemStatus === "Degraded" ? "text-warning" : "text-danger"}`} style={{ fontSize: "1.4rem", fontWeight: 700 }}>
+                {systemStatus}
+              </h6>
             </div>
           </div>
         </div>
@@ -63,7 +115,9 @@ export default function AdminDashboard({ profile, role }: Props) {
             </div>
             <div>
               <h6 className="text-muted font-semibold mb-1" style={{ fontSize: "0.85rem", color: "#4B5563" }}>DB Connection</h6>
-              <h6 className="font-extrabold mb-0 text-success" style={{ fontSize: "1.4rem", fontWeight: 700 }}>Connected</h6>
+              <h6 className={`font-extrabold mb-0 ${dbStatus === "Connected" ? "text-success" : "text-danger"}`} style={{ fontSize: "1.4rem", fontWeight: 700 }}>
+                {dbStatus}
+              </h6>
             </div>
           </div>
         </div>

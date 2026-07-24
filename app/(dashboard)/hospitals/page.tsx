@@ -139,6 +139,28 @@ export default function HospitalsPage() {
                     <span style={{ borderRadius: "9999px", background: "#FEE2E2", color: "#991B1B", padding: "0.35em 0.8em", fontSize: "0.7rem", fontWeight: 700 }}>Inactive</span>
                   ),
                 },
+                {
+                  key: "actions",
+                  label: "",
+                  render: (item) => (
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-sm btn-light"
+                        title="Edit hospital"
+                        onClick={() => {}}
+                      >
+                        <Icon name="edit" size={16} />
+                      </button>
+                      <button
+                        className="btn btn-sm btn-light"
+                        title={item.is_active ? "Deactivate" : "Activate"}
+                        onClick={() => {}}
+                      >
+                        <Icon name={item.is_active ? "pause" : "play"} size={16} />
+                      </button>
+                    </div>
+                  ),
+                },
               ]}
               items={page?.items ?? []}
               loading={loading}

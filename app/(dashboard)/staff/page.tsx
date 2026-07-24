@@ -175,6 +175,28 @@ export default function StaffPage() {
                     </span>
                   ),
                 },
+                {
+                  key: "actions",
+                  label: "",
+                  render: (item) => (
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-sm btn-light"
+                        title="Edit staff"
+                        onClick={() => {}}
+                      >
+                        <Icon name="edit" size={16} />
+                      </button>
+                      <button
+                        className="btn btn-sm btn-light"
+                        title={item.is_active ? "Deactivate" : "Activate"}
+                        onClick={() => {}}
+                      >
+                        <Icon name={item.is_active ? "pause" : "play"} size={16} />
+                      </button>
+                    </div>
+                  ),
+                },
               ]}
               items={page?.items ?? []}
               loading={loading}
